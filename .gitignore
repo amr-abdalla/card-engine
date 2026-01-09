@@ -1,0 +1,17 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Build folders
+/bin/
+/build/
+/target/
