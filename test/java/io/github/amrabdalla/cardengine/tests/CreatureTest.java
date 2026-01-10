@@ -38,17 +38,19 @@ public class CreatureTest {
 
     private Game game;
 
-    private Collection<Card> getDummyDeck() {
+    private Collection<Card> getDummyDeck() 
+    {
         Effect effect = EffectFactory.getInstance().getEffect(EffectID.DestroyTargetCreature, strongHP);
         Creature weakCreature = new ConcreteCreature(weakAttack, weakHP, Optional.of(effect));
-        Creature midCreature = new ConcreteCreature(midAttack, midHP, null);
-        Creature strongCreature = new ConcreteCreature(strongAttack, strongHP, null);
+        Creature midCreature = new ConcreteCreature(midAttack, midHP, Optional.empty());
+        Creature strongCreature = new ConcreteCreature(strongAttack, strongHP, Optional.empty());
 
         return Arrays.asList(weakCreature, midCreature, strongCreature);
     }
 
     @BeforeEach
-    void setup() {
+    void setup() 
+    {
         Random random = new Random(randomSeed);
         Duelist duelist1 = new ConcreteDuelist(getDummyDeck(), random, creatureZoneCount, helperZoneCount, startingHand, lifePoints);
         Duelist duelist2 = new ConcreteDuelist(getDummyDeck(), random, creatureZoneCount, helperZoneCount, startingHand, lifePoints);

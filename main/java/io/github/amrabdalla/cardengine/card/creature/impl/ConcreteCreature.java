@@ -12,6 +12,12 @@ public class ConcreteCreature extends AbstractCreature implements Creature
 		this.baseAttack = baseAttack;
 		this.baseMaxHP = baseMaxHP;
 		this.currentHP = baseMaxHP;
+		
+		if (effect == null)
+		{
+		    System.out.println("WARNING: effect is null. Consider using Optional.empty() instead.");
+		}	
+		
 		this.effect = effect;
 	}
 }
