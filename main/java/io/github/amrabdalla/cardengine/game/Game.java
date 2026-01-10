@@ -65,4 +65,15 @@ public class Game
 	{
 		return currentTurn.getCurrentPhase();
 	}
+	
+	public void endTurn()
+	{
+		currentTurn.endTurn();
+		currentDuelist = getNextDuelist();
+	}
+	
+	public GameContext getContext()
+	{
+		return gameContext;
+	}
 }

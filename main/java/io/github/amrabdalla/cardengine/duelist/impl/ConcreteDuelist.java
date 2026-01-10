@@ -13,6 +13,8 @@ import io.github.amrabdalla.cardengine.card.core.Card;
 import io.github.amrabdalla.cardengine.card.zone.CreatureZone;
 import io.github.amrabdalla.cardengine.card.zone.HelperZone;
 import io.github.amrabdalla.cardengine.duelist.core.Duelist;
+import io.github.amrabdalla.cardengine.zone.impl.ConcreteCreatureZone;
+import io.github.amrabdalla.cardengine.zone.impl.ConcreteHelperZone;
 
 public class ConcreteDuelist implements Duelist
 {
@@ -28,15 +30,14 @@ public class ConcreteDuelist implements Duelist
 	{
 		this.random = random;
 		
-		this.deck = new ArrayDeque<Card>();	
-		for(Card card : deck)
-		{
-			this.deck.add(card);
-		}	
+		this.deck = new ArrayDeque<>(deck);	
 		shuffleDeck();
 		
 		creatureZones = new CreatureZone[creatureZoneCount];
+		Arrays.setAll(creatureZones, i -> new ConcreteCreatureZone());
+
 		helperZones = new HelperZone[helperZoneCount];
+		Arrays.setAll(helperZones, i -> new ConcreteHelperZone());
 		
 		hand = new ArrayList<>();	
 		draw(startingHand);
