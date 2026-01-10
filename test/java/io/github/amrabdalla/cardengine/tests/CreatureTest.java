@@ -21,140 +21,85 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Random;
 
-public class CreatureTest 
-{	
-	private final int _creatureZoneCount = 3;
-	private final int _helperZoneCount = 3;
-	private final int _startingHand = 2;
-	private final int _lifePoints = 1000;
-	private final long _randomSeed = 0;
+public class CreatureTest {
 
-	private final int _weakAttack = 250;
-	private final int _weakHP = 1000;
-	private final int _midAttack = 500;
-	private final int _midHP = 2000;
-	private final int _strongAttack = 1000;
-	private final int _strongHP = 3000;
+    private final int creatureZoneCount = 3;
+    private final int helperZoneCount = 3;
+    private final int startingHand = 2;
+    private final int lifePoints = 1000;
+    private final long randomSeed = 0;
 
-	private Game game;
-	
-	Collection<Card> getDummyDeck()
-	{
-		Effect effect = EffectFactory.getInstance().getEffect(EffectID.DestroyTargetCreature, _strongHP);
-		Creature weakCreature = new ConcreteCreature(_weakAttack, _weakHP, Optional.of(effect));
-		Creature midCreature = new ConcreteCreature(_midAttack, _midHP, null);
-		Creature strongCreature = new ConcreteCreature(_strongAttack, _strongHP, null);
-		
-		return Arrays.asList(weakCreature, midCreature, strongCreature);
-	}
-	
+    private final int weakAttack = 250;
+    private final int weakHP = 1000;
+    private final int midAttack = 500;
+    private final int midHP = 2000;
+    private final int strongAttack = 1000;
+    private final int strongHP = 3000;
+
+    private Game game;
+
+    private Collection<Card> getDummyDeck() {
+        Effect effect = EffectFactory.getInstance().getEffect(EffectID.DestroyTargetCreature, strongHP);
+        Creature weakCreature = new ConcreteCreature(weakAttack, weakHP, Optional.of(effect));
+        Creature midCreature = new ConcreteCreature(midAttack, midHP, null);
+        Creature strongCreature = new ConcreteCreature(strongAttack, strongHP, null);
+
+        return Arrays.asList(weakCreature, midCreature, strongCreature);
+    }
+
     @BeforeEach
-    void setup() 
+    void setup() {
+        Random random = new Random(randomSeed);
+        Duelist duelist1 = new ConcreteDuelist(getDummyDeck(), random, creatureZoneCount, helperZoneCount, startingHand, lifePoints);
+        Duelist duelist2 = new ConcreteDuelist(getDummyDeck(), random, creatureZoneCount, helperZoneCount, startingHand, lifePoints);
+        game = new Game(duelist1, duelist2);
+    }
+
+    private Creature getFirstCreatureInHand(Duelist duelist) 
     {
-    	Random random = new Random(_randomSeed);
-    	Duelist duelist1 = new ConcreteDuelist(getDummyDeck(), random, _creatureZoneCount, _helperZoneCount, _startingHand, _lifePoints);
-    	Duelist duelist2 = new ConcreteDuelist(getDummyDeck(), random, _creatureZoneCount, _helperZoneCount, _startingHand, _lifePoints);
-    	game = new Game(duelist1, duelist2);
+        Collection<Card> hand = duelist.getHand();
+        Iterator<Card> handIterator = hand.iterator();
+
+        assertTrue(handIterator.hasNext(), "Expected a card in hand, but hand was empty");
+
+        Card first = handIterator.next();
+        assertTrue(first instanceof Creature, "Expected a creature, but card is a " + first.getClass());
+
+        return (Creature) first;
     }
 
     @Test
     void testAttack() 
     {
-    	Collection<Card> hand = game.getCurrentDuelist().getHand();
+        Creature strongCreature = getFirstCreatureInHand(game.getCurrentDuelist());
+        assertEquals(strongAttack, strongCreature.getAttack(), "Strong creature attack mismatch");
+        strongCreature.play(game.getCurrentDuelist().getCreatureZones().iterator().next());
+        game.endTurn();
 
-    	Iterator<Card> handIterator = hand.iterator();
-    	    	
-    	if (!handIterator.hasNext())
-    	{
-    		// throw assertion error here
-    		return;
-    	}
-    	
-    	Card first = hand.iterator().next();
-    	
-    	if (! (first instanceof Creature))
-    	{
-			// throw assertion error here
-    		return;
-    	}	
-    	
-    	Creature strongCreature = (Creature) first;
-		assertTrue(strongCreature.getAttack() == _strongAttack);
-		strongCreature.play(game.getCurrentDuelist().getCreatureZones().iterator().next());	
-		game.endTurn();
-		
-    	hand = game.getCurrentDuelist().getHand();
-    	handIterator = hand.iterator();
-    	
-    	if (!handIterator.hasNext())
-    	{
-    		// throw assertion error here
-    		return;
-    	}
+        Creature weakCreature = getFirstCreatureInHand(game.getCurrentDuelist());
+        assertEquals(weakAttack, weakCreature.getAttack(), "Weak creature attack mismatch");
+        assertTrue(weakCreature.canAttack(strongCreature), "Weak creature should be able to attack strong creature");
 
-    	first = hand.iterator().next();
-    	
-    	if (! (first instanceof Creature))
-    	{
-			// throw assertion error here
-    		return;
-    	}	
-    	
-    	Creature weakCreature = (Creature) first;
-		assertTrue(weakCreature.getAttack() == _weakAttack);
-		assertTrue(weakCreature.canAttack(strongCreature));	
-		weakCreature.attack(strongCreature);
-		assertTrue(strongCreature.getCurrentHP() == strongCreature.getMaxHP() - weakCreature.getAttack());
+        weakCreature.attack(strongCreature);
+        assertEquals(strongCreature.getMaxHP() - weakCreature.getAttack(),
+                     strongCreature.getCurrentHP(),
+                     "Strong creature HP after attack mismatch");
     }
-    
+
     @Test
     void testEffects() 
     {
-    	Collection<Card> hand = game.getCurrentDuelist().getHand();
+        Creature strongCreature = getFirstCreatureInHand(game.getCurrentDuelist());
+        assertEquals(strongAttack, strongCreature.getAttack(), "Strong creature attack mismatch");
+        strongCreature.play(game.getCurrentDuelist().getCreatureZones().iterator().next());
+        game.endTurn();
 
-    	Iterator<Card> handIterator = hand.iterator();
-    	    	
-    	if (!handIterator.hasNext())
-    	{
-    		// throw assertion error here
-    		return;
-    	}
-    	
-    	Card first = hand.iterator().next();
-    	
-    	if (! (first instanceof Creature))
-    	{
-			// throw assertion error here
-    		return;
-    	}	
-    	
-    	Creature strongCreature = (Creature) first;
-		assertTrue(strongCreature.getAttack() == _strongAttack);
-		strongCreature.play(game.getCurrentDuelist().getCreatureZones().iterator().next());	
-		game.endTurn();
-		
-    	hand = game.getCurrentDuelist().getHand();
-    	handIterator = hand.iterator();
-    	
-    	if (!handIterator.hasNext())
-    	{
-    		// throw assertion error here
-    		return;
-    	}
+        Creature weakCreature = getFirstCreatureInHand(game.getCurrentDuelist());
+        assertEquals(weakAttack, weakCreature.getAttack(), "Weak creature attack mismatch");
+        assertTrue(weakCreature.canActivateEffect(game.getContext(), Optional.of(strongCreature)),
+                   "Weak creature should be able to activate effect on strong creature");
 
-    	first = hand.iterator().next();
-    	
-    	if (! (first instanceof Creature))
-    	{
-			// throw assertion error here
-    		return;
-    	}	
-    	
-    	Creature weakCreature = (Creature) first;
-		assertTrue(weakCreature.getAttack() == _weakAttack);
-		assertTrue(weakCreature.canActivateEffect(game.getContext(), Optional.of(strongCreature)));
-		weakCreature.activateEffect(game.getContext(), Optional.of(strongCreature));
-		assertTrue(strongCreature.isDead());
+        weakCreature.activateEffect(game.getContext(), Optional.of(strongCreature));
+        assertTrue(strongCreature.isDead(), "Strong creature should be dead after effect activation");
     }
-
 }
