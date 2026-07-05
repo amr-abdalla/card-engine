@@ -21,4 +21,14 @@ public class GameContext
     {
     	return game.getCurrentDuelist();
     }
+
+    public Duelist getOpponentDuelist()
+    {
+    	return game.getOpponentDuelist();
+    }
+
+    public int getTurnNumber()
+    {
+    	return game.getTurnNumber();
+    }
 }
