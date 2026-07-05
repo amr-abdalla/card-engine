@@ -95,9 +95,39 @@ public class ConcreteDuelist implements Duelist
 		return Arrays.asList(helperZones);
 	}
 
-	public int getLifePoints() 
+	public int getLifePoints()
 	{
 		return lifePoints;
+	}
+
+	public void takeDamage(int amount)
+	{
+		if (amount < 0)
+		{
+			throw new IllegalArgumentException("Damage amount must not be negative");
+		}
+
+		lifePoints = Math.max(0, lifePoints - amount);
+	}
+
+	public void gainLifePoints(int amount)
+	{
+		if (amount < 0)
+		{
+			throw new IllegalArgumentException("Life points amount must not be negative");
+		}
+
+		lifePoints += amount;
+	}
+
+	public void discard(Card card)
+	{
+		discardPile.push(card);
+	}
+
+	public int getDeckSize()
+	{
+		return deck.size();
 	}
 
 }

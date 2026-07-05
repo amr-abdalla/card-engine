@@ -15,16 +15,22 @@ public class Game
 	private Turn currentTurn;
 	private Duelist currentDuelist;
 	private GameContext gameContext;
-	
+	private int turnNumber;
+
 	public Game(Duelist duelist1, Duelist duelist2)
+	{
+		this(duelist1, duelist2, new SampleTurn(TurnFactory.getInstance().getSampleTurnPhases()));
+	}
+
+	public Game(Duelist duelist1, Duelist duelist2, Turn turn)
 	{
 		this.duelist1 = duelist1;
 		this.duelist2 = duelist2;
-		
-		List<TurnPhase> turnPhases = TurnFactory.getInstance().getSampleTurnPhases();
-		currentTurn = new SampleTurn(turnPhases);
+
+		currentTurn = turn;
 		currentDuelist = getNextDuelist();
 		gameContext = new GameContext(this);
+		turnNumber = 1;
 	}
 	
 	private Duelist getNextDuelist()
@@ -66,10 +72,33 @@ public class Game
 		return currentTurn.getCurrentPhase();
 	}
 	
+	public Duelist getOpponentDuelist()
+	{
+		return getOppositeDuelist();
+	}
+
+	public int getTurnNumber()
+	{
+		return turnNumber;
+	}
+
+	public void moveToNextPhase()
+	{
+		if (currentTurn.isLastPhase())
+		{
+			endTurn();
+		}
+		else
+		{
+			currentTurn.moveToNextPhase();
+		}
+	}
+
 	public void endTurn()
 	{
 		currentTurn.endTurn();
 		currentDuelist = getNextDuelist();
+		turnNumber++;
 	}
 	
 	public GameContext getContext()
