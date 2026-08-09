@@ -11,8 +11,12 @@ public interface Duelist
 	public Collection<Card> getHand();
 	public void shuffleDeck();
 	public int draw(int count);
+	public int getDeckSize();
 	public Collection<Card> getDiscardPile();
+	public void discard(Card card);
 	public Collection<CreatureZone> getCreatureZones();
 	public Collection<HelperZone> getHelperZones();
 	public int getLifePoints();
+	public void takeDamage(int amount);
+	public void gainLifePoints(int amount);
 }

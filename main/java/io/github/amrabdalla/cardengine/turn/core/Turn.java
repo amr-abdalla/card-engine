@@ -15,6 +15,11 @@ public abstract class Turn
 		return getPhases().get(currentPhaseIndex);
 	}
 	
+	public boolean isLastPhase()
+	{
+		return currentPhaseIndex + 1 >= getPhases().size();
+	}
+
 	public void moveToNextPhase()
 	{
 		if (currentPhaseIndex + 1 < getPhases().size())

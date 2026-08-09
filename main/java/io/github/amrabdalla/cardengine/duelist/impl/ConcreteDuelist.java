@@ -80,24 +80,60 @@ public class ConcreteDuelist implements Duelist
 		return drawn;
 	}
 
-	public Collection<Card> getDiscardPile() 
+	public int getDeckSize()
+	{
+		return deck.size();
+	}
+
+	public Collection<Card> getDiscardPile()
 	{
 		return discardPile;
 	}
-	
-	public Collection<CreatureZone> getCreatureZones() 
+
+	public void discard(Card card)
+	{
+		if (card == null)
+		{
+			throw new IllegalArgumentException("Cannot discard a null card");
+		}
+
+		hand.remove(card);
+		discardPile.push(card);
+	}
+
+	public Collection<CreatureZone> getCreatureZones()
 	{
 		return Arrays.asList(creatureZones);
 	}
 
-	public Collection<HelperZone> getHelperZones() 
+	public Collection<HelperZone> getHelperZones()
 	{
 		return Arrays.asList(helperZones);
 	}
 
-	public int getLifePoints() 
+	public int getLifePoints()
 	{
 		return lifePoints;
+	}
+
+	public void takeDamage(int amount)
+	{
+		if (amount < 0)
+		{
+			throw new IllegalArgumentException("Damage cannot be negative: " + amount);
+		}
+
+		lifePoints = Math.max(0, lifePoints - amount);
+	}
+
+	public void gainLifePoints(int amount)
+	{
+		if (amount < 0)
+		{
+			throw new IllegalArgumentException("Gained life points cannot be negative: " + amount);
+		}
+
+		lifePoints += amount;
 	}
 
 }
